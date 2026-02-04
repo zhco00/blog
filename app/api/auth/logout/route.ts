@@ -1,0 +1,16 @@
+import { NextResponse } from 'next/server'
+import { destroySession } from '@/lib/auth'
+
+/**
+ * POST /api/auth/logout - Logout admin
+ */
+export async function POST() {
+  try {
+    await destroySession()
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('[API] POST /api/auth/logout failed:', error)
+    return NextResponse.json({ error: 'Logout failed' }, { status: 500 })
+  }
+}

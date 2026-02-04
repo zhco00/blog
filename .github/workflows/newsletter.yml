@@ -1,0 +1,71 @@
+name: Newsletter
+
+on:
+  schedule:
+    # Daily newsletter - every day at 9 AM KST (0:00 UTC)
+    - cron: '0 0 * * *'
+    # Weekly newsletter - every Sunday at 10 AM KST (1:00 UTC)
+    - cron: '0 1 * * 0'
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Newsletter type to send'
+        required: true
+        type: choice
+        options:
+          - daily
+          - weekly
+
+jobs:
+  send-newsletter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build content collections
+        run: pnpm content-collections build
+
+      - name: Determine newsletter type
+        id: newsletter-type
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ github.event.inputs.type }}" >> $GITHUB_OUTPUT
+          elif [ "$(date +%u)" = "7" ]; then
+            echo "type=weekly" >> $GITHUB_OUTPUT
+          else
+            echo "type=daily" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Daily Newsletter
+        if: steps.newsletter-type.outputs.type == 'daily'
+        run: pnpm tsx scripts/newsletter/send-daily.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
+
+      - name: Send Weekly Newsletter
+        if: steps.newsletter-type.outputs.type == 'weekly'
+        run: pnpm tsx scripts/newsletter/send-weekly.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}

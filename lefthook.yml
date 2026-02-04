@@ -1,0 +1,13 @@
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      glob: "*.{js,ts,jsx,tsx,json}"
+      run: pnpm biome check --write --staged
+    typecheck:
+      run: pnpm tsc --noEmit
+
+pre-push:
+  commands:
+    test:
+      run: pnpm test run

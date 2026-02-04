@@ -1,0 +1,63 @@
+---
+title: "TypeScript 실전 베스트 프랙티스"
+date: "2026-01-28"
+category: "tech"
+tags: ["TypeScript", "Best Practice"]
+summary: "실무에서 바로 적용 가능한 TypeScript 코딩 패턴을 소개합니다."
+aiGenerated: false
+content: ""
+---
+
+# TypeScript 실전 베스트 프랙티스
+
+## 1. 타입 좁히기 (Type Narrowing)
+
+```typescript
+function processValue(value: string | number) {
+  if (typeof value === 'string') {
+    // value는 string 타입
+    return value.toUpperCase()
+  }
+  // value는 number 타입
+  return value.toFixed(2)
+}
+```
+
+## 2. Utility Types 활용
+
+```typescript
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
+// 일부 필드만 필수
+type CreateUserInput = Omit<User, 'id'>
+
+// 모든 필드 선택적
+type PartialUser = Partial<User>
+
+// 읽기 전용
+type ReadonlyUser = Readonly<User>
+```
+
+## 3. Discriminated Unions
+
+```typescript
+type Result<T> =
+  | { success: true; data: T }
+  | { success: false; error: string }
+
+function handleResult(result: Result<string>) {
+  if (result.success) {
+    console.log(result.data) // 타입 안전
+  } else {
+    console.error(result.error)
+  }
+}
+```
+
+## 결론
+
+TypeScript의 강력한 타입 시스템을 활용하면 런타임 에러를 컴파일 타임에 잡을 수 있습니다.

@@ -1,0 +1,52 @@
+name: Daily Development Tip
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 UTC 00:00 (KST 09:00)
+  workflow_dispatch:  # 수동 트리거 지원
+
+permissions:
+  contents: write
+
+jobs:
+  generate-tip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate daily tip
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+          GITHUB_OWNER: ${{ secrets.GITHUB_OWNER }}
+          GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          AI_DAILY_TIP_MAX_TOKENS: ${{ vars.AI_DAILY_TIP_MAX_TOKENS }}
+        run: pnpm run generate:daily-tip
+
+      - name: Send notification on failure
+        if: failure()
+        run: |
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+              -H "Content-Type: application/json" \
+              -d '{"content":"❌ Daily tip generation failed. Check GitHub Actions logs."}'
+          fi
