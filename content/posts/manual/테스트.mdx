@@ -1,0 +1,10 @@
+---
+title: "테스트"
+date: "2026-02-05"
+category: manual
+tags: ["첫 포스트", "환영"]
+summary: "123"
+aiGenerated: false
+---
+
+<p><strong><br>1/1</strong></p><p><strong>Next.js 16.1.6Turbopack</strong></p><p><strong>Runtime Error</strong></p><p><strong>Tiptap Error: SSR has been detected, please set </strong><code>immediatelyRender</code><strong> explicitly to </strong><code>false</code><strong> to avoid hydration mismatches.</strong></p><p>components/admin/RichTextEditor.tsx (43:27) @ RichTextEditor</p><pre><code>  41 |   const fileInputRef = useRef&lt;HTMLInputElement&gt;(null)</code></pre><p> 42 |</p><p><strong>&gt;</strong> 43 |   const editor = useEditor({</p><p>    |                           <strong>^</strong></p><p> 44 |     extensions: [</p><p> 45 |       StarterKit.configure({</p><p> 46 |         heading: {</p><p><strong>Call Stack24</strong></p><p>Show 21 ignore-listed frame(s)</p><p><strong>RichTextEditor</strong></p><p>components/admin/RichTextEditor.tsx (43:27)</p><p><strong>EditorContent</strong></p><p>app/admin/posts/editor/page.tsx (285:15)</p><p><strong>AdminEditorPage</strong></p><p>app/admin/posts/editor/page.tsx (368:7)</p>
