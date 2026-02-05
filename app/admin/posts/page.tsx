@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { redirect } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, ExternalLink } from 'lucide-react'
+import { Search, ExternalLink, Pencil, Trash2, Plus, Loader2 } from 'lucide-react'
 
 interface Post {
   slug: string
@@ -21,12 +21,14 @@ interface Post {
 }
 
 export default function AdminPostsPage() {
+  const router = useRouter()
   const [posts, setPosts] = useState<Post[]>([])
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState<'all' | 'manual' | 'ai'>('all')
   const [search, setSearch] = useState('')
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -79,6 +81,30 @@ export default function AdminPostsPage() {
     setFilteredPosts(filtered)
   }, [filter, search, posts])
 
+  const handleDelete = async (slug: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return
+
+    setDeletingSlug(slug)
+    try {
+      const response = await fetch(`/api/admin/posts/${slug}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to delete')
+      }
+
+      // Remove from local state
+      setPosts(posts.filter((p) => p.slug !== slug))
+      setFilteredPosts(filteredPosts.filter((p) => p.slug !== slug))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete post')
+    } finally {
+      setDeletingSlug(null)
+    }
+  }
+
   if (loading) {
     return (
       <AdminLayout>
@@ -102,9 +128,15 @@ export default function AdminPostsPage() {
   return (
     <AdminLayout>
       <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Posts Management</h1>
-          <p className="text-muted-foreground">Manage all your blog posts</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Posts Management</h1>
+            <p className="text-muted-foreground">Manage all your blog posts</p>
+          </div>
+          <Button onClick={() => router.push('/admin/posts/editor')}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Post
+          </Button>
         </div>
 
         {/* Filters and Search */}
@@ -177,7 +209,16 @@ export default function AdminPostsPage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => router.push(`/admin/posts/editor?edit=${post.slug}`)}
+                        title="Edit"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         asChild
+                        title="View"
                       >
                         <a
                           href={`/blog/${post.slug}`}
@@ -186,6 +227,20 @@ export default function AdminPostsPage() {
                         >
                           <ExternalLink className="h-4 w-4" />
                         </a>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(post.slug)}
+                        disabled={deletingSlug === post.slug}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="Delete"
+                      >
+                        {deletingSlug === post.slug ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>

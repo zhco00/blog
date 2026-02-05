@@ -12,7 +12,6 @@ export async function notifyAIPublish(data: AIPublishNotification): Promise<void
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL
 
   if (!webhookUrl) {
-    console.log('[notifyAIPublish] Discord webhook not configured, skipping notification')
     return
   }
 
@@ -32,20 +31,12 @@ export async function notifyAIPublish(data: AIPublishNotification): Promise<void
   }
 
   try {
-    const response = await fetch(webhookUrl, {
+    await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ embeds: [embed] }),
     })
-
-    if (!response.ok) {
-      throw new Error(`Discord webhook returned ${response.status}`)
-    }
-
-    console.log('[notifyAIPublish] Notification sent successfully')
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error(`[notifyAIPublish] Failed - data: ${JSON.stringify(data)}, error: ${errorMessage}`)
+  } catch {
     // Don't throw - notification failure shouldn't break the main flow
   }
 }

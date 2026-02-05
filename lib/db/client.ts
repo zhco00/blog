@@ -14,12 +14,9 @@ if (databaseUrl) {
     const sql = neon(databaseUrl)
     db = drizzle(sql, { schema })
     isDbAvailable = true
-  } catch (error) {
-    console.warn('[DB] Failed to initialize database connection:', error)
+  } catch {
     isDbAvailable = false
   }
-} else {
-  console.warn('[DB] DATABASE_URL not configured - running in no-database mode')
 }
 
 // Export database instance (can be null)

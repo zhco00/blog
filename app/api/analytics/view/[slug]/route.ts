@@ -26,8 +26,7 @@ export async function GET(request: Request, context: RouteContext) {
       views: analytics?.views || 0,
       likes: analytics?.likes || 0,
     })
-  } catch (error) {
-    console.error('[API] GET /api/analytics/view/[slug] failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Failed to get analytics' }, { status: 500 })
   }
 }
@@ -57,8 +56,7 @@ export async function POST(request: Request, context: RouteContext) {
       views: analytics.views,
       likes: analytics.likes,
     })
-  } catch (error) {
-    console.error('[API] POST /api/analytics/view/[slug] failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Failed to increment views' }, { status: 500 })
   }
 }

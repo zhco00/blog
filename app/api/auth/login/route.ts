@@ -33,8 +33,7 @@ export async function POST(request: Request) {
     await createSession()
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('[API] POST /api/auth/login failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Login failed' }, { status: 500 })
   }
 }

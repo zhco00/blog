@@ -35,8 +35,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('[API] DELETE /api/admin/comments/[id] failed:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to delete comment' },
       { status: 500 }

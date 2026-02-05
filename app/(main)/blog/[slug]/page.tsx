@@ -52,6 +52,13 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <div>
+      {/* 목록으로 돌아가기 */}
+      <div className="max-w-4xl mx-auto px-4 pt-6">
+        <Link href="/blog">
+          <Button variant="ghost">← 목록으로 돌아가기</Button>
+        </Link>
+      </div>
+
       <PostContent post={post} />
 
       {/* Analytics & Share Section */}
@@ -106,12 +113,6 @@ export default async function BlogPostPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* 목록으로 돌아가기 */}
-      <div className="max-w-4xl mx-auto px-4 pb-8">
-        <Link href="/blog">
-          <Button variant="ghost">← 목록으로 돌아가기</Button>
-        </Link>
-      </div>
     </div>
   )
 }

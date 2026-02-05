@@ -42,8 +42,7 @@ export async function GET() {
         estimatedCost: Number(estimatedCost.toFixed(4)),
       },
     })
-  } catch (error) {
-    console.error('[API] GET /api/admin/ai-logs failed:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get AI logs' },
       { status: 500 }

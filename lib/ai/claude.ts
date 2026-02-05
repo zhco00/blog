@@ -23,13 +23,9 @@ export async function generateContent(
 ): Promise<GenerateResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY
 
-  // Graceful fallback when API key is missing
+  // Fail explicitly when API key is missing
   if (!apiKey) {
-    console.warn('ANTHROPIC_API_KEY is not set. Returning mock data.')
-    return {
-      content: `# Mock Generated Content\n\nThis is mock content because ANTHROPIC_API_KEY is not configured.\n\nPrompt was: ${prompt.slice(0, 100)}...`,
-      tokensUsed: 0,
-    }
+    throw new Error('ANTHROPIC_API_KEY is not configured')
   }
 
   const { model = 'claude-sonnet-4-20250514', maxTokens = 1500, system } = options
@@ -51,7 +47,6 @@ export async function generateContent(
     return { content, tokensUsed }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error('[generateContent] Failed - prompt:', prompt.slice(0, 100), 'error:', errorMessage)
     throw new Error(`Failed to generate content: ${errorMessage}`)
   }
 }

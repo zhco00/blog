@@ -26,7 +26,6 @@ export async function sendNewsletter({
   type,
 }: SendNewsletterOptions): Promise<{ success: boolean; error?: string }> {
   if (!isEmailAvailable() || !resend) {
-    console.warn('[Email] Resend not configured, skipping newsletter send')
     return { success: false, error: 'Email service not configured' }
   }
 
@@ -64,15 +63,9 @@ export async function sendNewsletter({
       })
     )
 
-    const failed = results.filter((r) => r.status === 'rejected')
-    if (failed.length > 0) {
-      console.error(`[Email] ${failed.length}/${to.length} emails failed`)
-    }
-
     return { success: true }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    console.error('[Email] Failed to send newsletter:', message)
     return { success: false, error: message }
   }
 }
@@ -85,7 +78,6 @@ export async function sendWelcomeEmail({
   to,
 }: SendWelcomeEmailOptions): Promise<{ success: boolean; error?: string }> {
   if (!isEmailAvailable() || !resend) {
-    console.warn('[Email] Resend not configured, skipping welcome email')
     return { success: false, error: 'Email service not configured' }
   }
 
@@ -108,7 +100,6 @@ export async function sendWelcomeEmail({
     return { success: true }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    console.error('[Email] Failed to send welcome email:', message)
     return { success: false, error: message }
   }
 }

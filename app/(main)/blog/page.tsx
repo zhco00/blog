@@ -1,14 +1,23 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { allPosts } from '@/.content-collections/generated'
 import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
 import SearchBar from '@/components/blog/SearchBar'
 
-export default function BlogPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+function BlogContent() {
+  const searchParams = useSearchParams()
+  const categoryParam = searchParams.get('category')
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam)
   const [searchQuery, setSearchQuery] = useState('')
+
+  // URL 파라미터 변경 시 카테고리 업데이트
+  useEffect(() => {
+    setSelectedCategory(categoryParam)
+  }, [categoryParam])
 
   // 카테고리 목록 추출
   const categories = useMemo(() => {
@@ -76,5 +85,13 @@ export default function BlogPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={<div className="max-w-6xl mx-auto px-4 py-12">로딩 중...</div>}>
+      <BlogContent />
+    </Suspense>
   )
 }

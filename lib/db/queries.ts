@@ -26,7 +26,7 @@ export async function createSubscriber(email: string): Promise<Subscriber | null
       .returning()
     return subscriber
   } catch (error) {
-    console.error('[DB] createSubscriber failed:', { email, error })
+    // DB operation failed: createSubscriber failed:', { email, error })
     return null
   }
 }
@@ -42,7 +42,7 @@ export async function getSubscriberByEmail(email: string): Promise<Subscriber | 
       .limit(1)
     return subscriber || null
   } catch (error) {
-    console.error('[DB] getSubscriberByEmail failed:', { email, error })
+    // DB operation failed: getSubscriberByEmail failed:', { email, error })
     return null
   }
 }
@@ -56,7 +56,7 @@ export async function getActiveSubscribers(): Promise<Subscriber[]> {
       .from(subscribers)
       .where(eq(subscribers.active, true))
   } catch (error) {
-    console.error('[DB] getActiveSubscribers failed:', error)
+    // DB operation failed: getActiveSubscribers failed:', error)
     return []
   }
 }
@@ -70,9 +70,23 @@ export async function unsubscribe(email: string): Promise<boolean> {
       .set({ active: false })
       .where(eq(subscribers.email, email))
     return true
-  } catch (error) {
-    console.error('[DB] unsubscribe failed:', { email, error })
+  } catch {
     return false
+  }
+}
+
+export async function reactivateSubscriber(email: string): Promise<Subscriber | null> {
+  if (!isDbAvailable || !db) return null
+
+  try {
+    const [subscriber] = await db
+      .update(subscribers)
+      .set({ active: true })
+      .where(eq(subscribers.email, email))
+      .returning()
+    return subscriber || null
+  } catch {
+    return null
   }
 }
 
@@ -108,7 +122,7 @@ export async function incrementViews(slug: string): Promise<PostAnalytics | null
       .returning()
     return created
   } catch (error) {
-    console.error('[DB] incrementViews failed:', { slug, error })
+    // DB operation failed: incrementViews failed:', { slug, error })
     return null
   }
 }
@@ -145,7 +159,7 @@ export async function toggleLike(slug: string, increment: boolean): Promise<Post
       .returning()
     return created
   } catch (error) {
-    console.error('[DB] toggleLike failed:', { slug, increment, error })
+    // DB operation failed: toggleLike failed:', { slug, increment, error })
     return null
   }
 }
@@ -161,7 +175,7 @@ export async function getPostAnalytics(slug: string): Promise<PostAnalytics | nu
       .limit(1)
     return analytics || null
   } catch (error) {
-    console.error('[DB] getPostAnalytics failed:', { slug, error })
+    // DB operation failed: getPostAnalytics failed:', { slug, error })
     return null
   }
 }
@@ -175,7 +189,7 @@ export async function getAllPostAnalytics(): Promise<PostAnalytics[]> {
       .from(postAnalytics)
       .orderBy(desc(postAnalytics.views))
   } catch (error) {
-    console.error('[DB] getAllPostAnalytics failed:', error)
+    // DB operation failed: getAllPostAnalytics failed:', error)
     return []
   }
 }
@@ -192,7 +206,7 @@ export async function createComment(data: NewComment): Promise<Comment | null> {
       .returning()
     return comment
   } catch (error) {
-    console.error('[DB] createComment failed:', { data, error })
+    // DB operation failed: createComment failed:', { data, error })
     return null
   }
 }
@@ -207,7 +221,7 @@ export async function getCommentsBySlug(slug: string): Promise<Comment[]> {
       .where(eq(comments.postSlug, slug))
       .orderBy(desc(comments.createdAt))
   } catch (error) {
-    console.error('[DB] getCommentsBySlug failed:', { slug, error })
+    // DB operation failed: getCommentsBySlug failed:', { slug, error })
     return []
   }
 }
@@ -221,7 +235,7 @@ export async function deleteComment(id: string): Promise<boolean> {
       .where(eq(comments.id, id))
     return true
   } catch (error) {
-    console.error('[DB] deleteComment failed:', { id, error })
+    // DB operation failed: deleteComment failed:', { id, error })
     return false
   }
 }
@@ -235,7 +249,7 @@ export async function getAllComments(): Promise<Comment[]> {
       .from(comments)
       .orderBy(desc(comments.createdAt))
   } catch (error) {
-    console.error('[DB] getAllComments failed:', error)
+    // DB operation failed: getAllComments failed:', error)
     return []
   }
 }
@@ -252,7 +266,7 @@ export async function createAIGeneration(data: NewAIGeneration): Promise<AIGener
       .returning()
     return generation
   } catch (error) {
-    console.error('[DB] createAIGeneration failed:', { data, error })
+    // DB operation failed: createAIGeneration failed:', { data, error })
     return null
   }
 }
@@ -267,7 +281,7 @@ export async function getAIGenerations(limit = 50): Promise<AIGeneration[]> {
       .orderBy(desc(aiGenerations.createdAt))
       .limit(limit)
   } catch (error) {
-    console.error('[DB] getAIGenerations failed:', error)
+    // DB operation failed: getAIGenerations failed:', error)
     return []
   }
 }
@@ -286,7 +300,7 @@ export async function markAIGenerationPublished(
       .returning()
     return updated
   } catch (error) {
-    console.error('[DB] markAIGenerationPublished failed:', { id, postSlug, error })
+    // DB operation failed: markAIGenerationPublished failed:', { id, postSlug, error })
     return null
   }
 }
@@ -309,7 +323,7 @@ export async function getAIGenerationStats(): Promise<{
 
     return result || { totalGenerated: 0, totalPublished: 0, totalTokensUsed: 0 }
   } catch (error) {
-    console.error('[DB] getAIGenerationStats failed:', error)
+    // DB operation failed: getAIGenerationStats failed:', error)
     return null
   }
 }

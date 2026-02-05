@@ -56,8 +56,8 @@ export function AdminSidebar() {
       if (response.ok) {
         router.push('/admin/login')
       }
-    } catch (error) {
-      console.error('Logout failed:', error)
+    } catch {
+      // Logout failed - user will remain logged in
     } finally {
       setLoggingOut(false)
     }

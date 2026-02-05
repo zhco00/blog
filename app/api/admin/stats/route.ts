@@ -75,8 +75,7 @@ export async function GET() {
       topPosts,
       recentComments,
     })
-  } catch (error) {
-    console.error('[API] GET /api/admin/stats failed:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get statistics' },
       { status: 500 }

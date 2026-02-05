@@ -61,17 +61,12 @@ export async function POST(request: Request) {
       message: `feat: add post "${title}"`,
     })
 
-    console.log(`[POST /api/posts/create] Successfully created post: ${slug}`)
-
     return NextResponse.json({
       success: true,
       slug,
       message: 'Post created successfully. It will be published after deployment.',
     })
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error(`[POST /api/posts/create] Failed - error: ${errorMessage}`)
-
+  } catch {
     return NextResponse.json(
       {
         success: false,

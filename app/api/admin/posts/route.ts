@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
     // Get all posts
     let posts = allPosts.map((post: Post) => ({
-      slug: post._meta.path,
+      slug: post.slug,
       title: post.title,
       date: post.date,
       category: post.category,
@@ -68,8 +68,7 @@ export async function GET(request: Request) {
       posts: postsWithAnalytics,
       total: postsWithAnalytics.length,
     })
-  } catch (error) {
-    console.error('[API] GET /api/admin/posts failed:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get posts' },
       { status: 500 }

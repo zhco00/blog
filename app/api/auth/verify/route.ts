@@ -30,8 +30,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('[API] POST /api/auth/verify failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Verification failed' }, { status: 500 })
   }
 }

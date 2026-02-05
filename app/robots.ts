@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://yourblog.com' // TODO: 실제 도메인으로 변경
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3005'
 
   return {
     rules: {

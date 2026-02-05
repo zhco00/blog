@@ -22,8 +22,8 @@ export default function LikeButton({ slug }: LikeButtonProps) {
           const data = await response.json()
           setLikes(data.likes || 0)
         }
-      } catch (error) {
-        console.error('[LikeButton] Failed to fetch likes:', error)
+      } catch {
+        // Failed to fetch likes - will show 0
       } finally {
         setIsLoading(false)
       }
@@ -60,8 +60,8 @@ export default function LikeButton({ slug }: LikeButtonProps) {
           localStorage.removeItem(likedKey)
         }
       }
-    } catch (error) {
-      console.error('[LikeButton] Failed to toggle like:', error)
+    } catch {
+      // Failed to toggle like - UI state unchanged
     }
   }
 

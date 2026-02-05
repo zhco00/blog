@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, AlertCircle } from 'lucide-react'
 
 interface Comment {
   id: string
@@ -22,6 +22,7 @@ export default function Comments({ slug }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Form state
   const [authorName, setAuthorName] = useState('')
@@ -31,6 +32,14 @@ export default function Comments({ slug }: CommentsProps) {
     fetchComments()
   }, [slug])
 
+  // Auto-dismiss error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [error])
+
   const fetchComments = async () => {
     try {
       const response = await fetch(`/api/comments?slug=${slug}`)
@@ -38,8 +47,8 @@ export default function Comments({ slug }: CommentsProps) {
         const data = await response.json()
         setComments(data.comments || [])
       }
-    } catch (error) {
-      console.error('[Comments] Failed to fetch comments:', error)
+    } catch {
+      // Failed to fetch comments - will show empty list
     } finally {
       setIsLoading(false)
     }
@@ -47,6 +56,7 @@ export default function Comments({ slug }: CommentsProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
 
     if (!authorName.trim() || !content.trim()) {
       return
@@ -73,11 +83,10 @@ export default function Comments({ slug }: CommentsProps) {
         await fetchComments()
       } else {
         const data = await response.json()
-        alert(data.error || 'Failed to post comment')
+        setError(data.error || '댓글 작성에 실패했습니다.')
       }
-    } catch (error) {
-      console.error('[Comments] Failed to submit comment:', error)
-      alert('Failed to post comment')
+    } catch {
+      setError('댓글 작성에 실패했습니다. 다시 시도해주세요.')
     } finally {
       setIsSubmitting(false)
     }
@@ -100,6 +109,12 @@ export default function Comments({ slug }: CommentsProps) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
             <div>
               <Input
                 placeholder="이름"

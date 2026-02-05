@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createSubscriber, getSubscriberByEmail } from '@/lib/db/queries'
+import { createSubscriber, getSubscriberByEmail, reactivateSubscriber } from '@/lib/db/queries'
 import { sendWelcomeEmail } from '@/lib/email/send'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
@@ -38,12 +38,22 @@ export async function POST(request: Request) {
           { status: 400 }
         )
       }
-      // Reactivate subscription would require an update function
-      // For now, treat as already subscribed
-      return NextResponse.json(
-        { success: false, error: '이미 구독 중인 이메일입니다.' },
-        { status: 400 }
-      )
+      // Reactivate inactive subscription
+      const reactivated = await reactivateSubscriber(email)
+      if (!reactivated) {
+        return NextResponse.json(
+          { success: false, error: '구독 재활성화 중 오류가 발생했습니다.' },
+          { status: 500 }
+        )
+      }
+      // Send welcome email for resubscription
+      sendWelcomeEmail({ to: email }).catch(() => {
+        // Welcome email failed - non-critical
+      })
+      return NextResponse.json({
+        success: true,
+        message: '구독이 다시 활성화되었습니다! 환영 이메일을 확인해주세요.',
+      })
     }
 
     // Create new subscriber
@@ -56,8 +66,8 @@ export async function POST(request: Request) {
     }
 
     // Send welcome email (non-blocking)
-    sendWelcomeEmail({ to: email }).catch((err) => {
-      console.error('[Subscribe] Failed to send welcome email:', err)
+    sendWelcomeEmail({ to: email }).catch(() => {
+      // Welcome email failed - non-critical
     })
 
     return NextResponse.json({
@@ -72,7 +82,6 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error('[Subscribe] Error:', error)
     return NextResponse.json(
       { success: false, error: '구독 처리 중 오류가 발생했습니다.' },
       { status: 500 }

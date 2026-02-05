@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://yourblog.com',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3005',
     siteName: 'AI 블로그',
     title: 'AI 블로그',
     description: '개인 블로그 + AI 자동화 콘텐츠 플랫폼',

@@ -9,10 +9,6 @@ const COOKIE_NAME = 'admin-token'
 // Check if auth is configured
 const isAuthConfigured = Boolean(JWT_SECRET && ADMIN_PASSWORD)
 
-if (!isAuthConfigured) {
-  console.warn('[Auth] JWT_SECRET or ADMIN_PASSWORD not configured - auth disabled')
-}
-
 // Get secret as Uint8Array for jose
 function getSecret(): Uint8Array {
   if (!JWT_SECRET) {
@@ -26,7 +22,6 @@ function getSecret(): Uint8Array {
  */
 export function verifyPassword(password: string): boolean {
   if (!isAuthConfigured || !ADMIN_PASSWORD) {
-    console.warn('[Auth] Password verification attempted but auth not configured')
     return false
   }
 
@@ -56,8 +51,7 @@ export async function createSession(): Promise<void> {
       maxAge: 60 * 60 * 24, // 24 hours
       path: '/',
     })
-  } catch (error) {
-    console.error('[Auth] createSession failed:', error)
+  } catch {
     throw new Error('Failed to create session')
   }
 }
@@ -112,8 +106,8 @@ export async function destroySession(): Promise<void> {
   try {
     const cookieStore = await cookies()
     cookieStore.delete(COOKIE_NAME)
-  } catch (error) {
-    console.error('[Auth] destroySession failed:', error)
+  } catch {
+    // Session destruction failed - cookie may already be deleted
   }
 }
 

@@ -34,8 +34,7 @@ export async function GET() {
       comments: enrichedComments,
       total: enrichedComments.length,
     })
-  } catch (error) {
-    console.error('[API] GET /api/admin/comments failed:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get comments' },
       { status: 500 }

@@ -32,8 +32,7 @@ export async function DELETE(
       .where(eq(subscribers.id, id))
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('[API] DELETE /api/admin/subscribers/[id] failed:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to delete subscriber' },
       { status: 500 }

@@ -88,7 +88,6 @@ ${content.slice(0, 10000)}
       )
     }
 
-    console.error('[AI Summary] Error:', error)
     return NextResponse.json(
       {
         success: false,

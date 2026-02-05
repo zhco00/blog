@@ -48,8 +48,7 @@ export async function POST(request: Request, context: RouteContext) {
       likes: analytics.likes,
       views: analytics.views,
     })
-  } catch (error) {
-    console.error('[API] POST /api/analytics/like/[slug] failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Failed to toggle like' }, { status: 500 })
   }
 }

@@ -48,7 +48,6 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error('[Unsubscribe] Error:', error)
     return NextResponse.json(
       { success: false, error: '구독 취소 중 오류가 발생했습니다.' },
       { status: 500 }

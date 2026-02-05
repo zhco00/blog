@@ -9,8 +9,7 @@ export async function POST() {
     await destroySession()
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('[API] POST /api/auth/logout failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Logout failed' }, { status: 500 })
   }
 }

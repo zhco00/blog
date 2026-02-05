@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Eye } from 'lucide-react'
 
 interface ViewCounterProps {
@@ -10,34 +10,44 @@ interface ViewCounterProps {
 export default function ViewCounter({ slug }: ViewCounterProps) {
   const [views, setViews] = useState<number>(0)
   const [isLoading, setIsLoading] = useState(true)
+  const hasIncremented = useRef(false)
 
   useEffect(() => {
-    // Fetch current view count
-    const fetchViews = async () => {
+    // Prevent double execution in StrictMode
+    if (hasIncremented.current) return
+    hasIncremented.current = true
+
+    // Check if already viewed in this session
+    const viewedKey = `viewed_${slug}`
+    const alreadyViewed = sessionStorage.getItem(viewedKey) === 'true'
+
+    const initializeViews = async () => {
       try {
-        const response = await fetch(`/api/analytics/view/${slug}`)
-        if (response.ok) {
-          const data = await response.json()
-          setViews(data.views || 0)
+        if (alreadyViewed) {
+          // Already viewed - just fetch current count
+          const response = await fetch(`/api/analytics/view/${slug}`)
+          if (response.ok) {
+            const data = await response.json()
+            setViews(data.views || 0)
+          }
+        } else {
+          // First view - increment and get new count
+          const response = await fetch(`/api/analytics/view/${slug}`, { method: 'POST' })
+          if (response.ok) {
+            const data = await response.json()
+            setViews(data.views || 0)
+            // Mark as viewed in this session
+            sessionStorage.setItem(viewedKey, 'true')
+          }
         }
-      } catch (error) {
-        console.error('[ViewCounter] Failed to fetch views:', error)
+      } catch {
+        // Failed to fetch/increment views
       } finally {
         setIsLoading(false)
       }
     }
 
-    // Increment view count
-    const incrementView = async () => {
-      try {
-        await fetch(`/api/analytics/view/${slug}`, { method: 'POST' })
-      } catch (error) {
-        console.error('[ViewCounter] Failed to increment view:', error)
-      }
-    }
-
-    fetchViews()
-    incrementView()
+    initializeViews()
   }, [slug])
 
   if (isLoading) {

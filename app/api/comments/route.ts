@@ -28,8 +28,7 @@ export async function GET(request: Request) {
     const comments = await getCommentsBySlug(slug)
 
     return NextResponse.json({ comments })
-  } catch (error) {
-    console.error('[API] GET /api/comments failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Failed to get comments' }, { status: 500 })
   }
 }
@@ -67,8 +66,7 @@ export async function POST(request: Request) {
       success: true,
       comment,
     })
-  } catch (error) {
-    console.error('[API] POST /api/comments failed:', error)
+  } catch {
     return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 })
   }
 }

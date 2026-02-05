@@ -20,7 +20,7 @@ export default function Header() {
             <Link href="/blog" className="hover:text-primary transition-colors">
               블로그
             </Link>
-            <Link href="/reading" className="hover:text-primary transition-colors">
+            <Link href="/blog?category=reading" className="hover:text-primary transition-colors">
               독서
             </Link>
             <Link href="/about" className="hover:text-primary transition-colors">

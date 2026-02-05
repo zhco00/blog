@@ -27,30 +27,6 @@ const posts = defineCollection({
   },
 })
 
-const reading = defineCollection({
-  name: 'reading',
-  directory: 'content/reading',
-  include: '**/*.mdx',
-  schema: z.object({
-    title: z.string(),
-    author: z.string(),
-    finishedDate: z.string().optional(),
-    rating: z.number().optional(),
-    pages: z.number().optional(),
-    content: z.string(),
-  }),
-  transform: async (document, context) => {
-    const body = await compileMDX(context, document)
-    const slug = document._meta.path.split('/').pop() || ''
-    return {
-      ...document,
-      body,
-      slug,
-      url: `/reading/${slug}`,
-    }
-  },
-})
-
 export default defineConfig({
-  collections: [posts, reading],
+  collections: [posts],
 })
