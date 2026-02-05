@@ -89,6 +89,11 @@ export async function PUT(
 
     const { title, content, category, tags, summary, aiGenerated } = result.data
 
+    // Escape curly braces for MDX compatibility
+    const escapedContent = content
+      .replace(/\{/g, '&#123;')
+      .replace(/\}/g, '&#125;')
+
     // Generate updated MDX content
     const mdxContent = `---
 title: "${title}"
@@ -99,7 +104,7 @@ summary: "${summary || ''}"
 aiGenerated: ${aiGenerated ?? post.aiGenerated}
 ---
 
-${content}`
+${escapedContent}`
 
     // Update file via GitHub API
     const filePath = `content/posts/${post._meta.filePath}`

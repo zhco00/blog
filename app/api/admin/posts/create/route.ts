@@ -38,6 +38,11 @@ export async function POST(request: Request) {
 
     const { title, content, category, tags, summary, aiGenerated = false } = result.data
 
+    // Escape curly braces for MDX compatibility
+    const escapedContent = content
+      .replace(/\{/g, '&#123;')
+      .replace(/\}/g, '&#125;')
+
     // Generate slug and date
     const slug = generateSlug(title)
     const now = new Date()
@@ -53,7 +58,7 @@ summary: "${summary || ''}"
 aiGenerated: ${aiGenerated}
 ---
 
-${content}`
+${escapedContent}`
 
     // Create file via GitHub API
     const filePath = `content/posts/${category}/${slug}.mdx`
