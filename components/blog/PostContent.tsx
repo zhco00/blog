@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { MDXContent } from '@content-collections/mdx/react'
 
@@ -23,8 +24,41 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 export default function PostContent({ post }: PostContentProps) {
+  const articleRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const article = articleRef.current
+    if (!article) return
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a[data-footnote-ref], a[data-footnote-backref]')
+      if (!link) return
+
+      const href = link.getAttribute('href')
+      if (!href?.startsWith('#')) return
+
+      e.preventDefault()
+      const el = document.getElementById(href.slice(1))
+      if (!el) return
+
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+      // Brief highlight
+      el.style.transition = 'background 0.3s'
+      el.style.background = 'hsl(271.5 81.3% 55.9% / 0.15)'
+      el.style.borderRadius = '4px'
+      setTimeout(() => {
+        el.style.background = ''
+      }, 2000)
+    }
+
+    article.addEventListener('click', handleClick)
+    return () => article.removeEventListener('click', handleClick)
+  }, [])
+
   return (
-    <article className="max-w-3xl mx-auto px-4 py-8">
+    <article ref={articleRef} className="max-w-3xl mx-auto px-4 py-8">
       {/* 메타데이터 */}
       <div className="mb-10">
         <div className="flex items-center gap-2 mb-5">

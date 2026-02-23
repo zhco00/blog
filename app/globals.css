@@ -259,7 +259,6 @@
     border-radius: 2px;
     background: hsl(var(--primary) / 0.1);
     transition: background 0.2s;
-    scroll-margin-top: 40vh;
   }
 
   .prose sup a[data-footnote-ref]:hover {
@@ -270,7 +269,7 @@
   /* Footnotes section at bottom */
   .prose .footnotes {
     margin-top: 3rem;
-    margin-bottom: 50vh; /* extra space so footnotes can scroll to center */
+    margin-bottom: 50vh;
     padding: 1rem 1.25rem;
     border-radius: 0.5rem;
     background: hsl(var(--muted) / 0.5);
@@ -297,7 +296,6 @@
   .prose .footnotes li {
     margin: 0.35rem 0;
     padding-left: 0.25rem;
-    scroll-margin-top: 40vh;
   }
 
   .prose .footnotes li:target {
