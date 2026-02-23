@@ -16,12 +16,7 @@
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "generate:daily-tip": "tsx scripts/auto-generators/daily-tip.ts",
-    "generate:github-trends": "tsx scripts/auto-generators/github-trends.ts",
-    "generate:stackoverflow-qa": "tsx scripts/auto-generators/stackoverflow-qa.ts",
-    "newsletter:daily": "tsx scripts/newsletter/send-daily.ts",
-    "newsletter:weekly": "tsx scripts/newsletter/send-weekly.ts",
-    "email:preview": "email dev --dir lib/email/templates --port 3010",
+    "generate:daily-post": "tsx scripts/auto-generators/daily-tip.ts",
     "prepare": "lefthook install"
   },
   "dependencies": {

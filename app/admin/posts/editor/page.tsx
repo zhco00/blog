@@ -16,7 +16,7 @@ const RichTextEditor = dynamic(
   { ssr: false, loading: () => <div className="h-[400px] border rounded-lg animate-pulse bg-gray-100" /> }
 )
 
-type Category = 'manual' | 'tech' | 'reading' | 'ai-daily-tip' | 'ai-github' | 'ai-news'
+type Category = 'manual' | 'tech' | 'reading' | 'ai'
 
 function EditorContent() {
   const router = useRouter()
@@ -25,6 +25,7 @@ function EditorContent() {
   const isEditMode = !!editSlug
 
   const [loading, setLoading] = useState(isEditMode)
+  const [contentLoaded, setContentLoaded] = useState(!isEditMode)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -62,6 +63,7 @@ function EditorContent() {
         setTagsInput(data.tags.join(', '))
         setSummary(data.summary || '')
         setAiGenerated(data.aiGenerated)
+        setContentLoaded(true)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load post')
       } finally {
@@ -219,9 +221,7 @@ function EditorContent() {
                   <option value="manual">일상</option>
                   <option value="tech">기술</option>
                   <option value="reading">독서</option>
-                  <option value="ai-daily-tip">AI Daily Tip</option>
-                  <option value="ai-github">AI GitHub</option>
-                  <option value="ai-news">AI News</option>
+                  <option value="ai">AI</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -282,11 +282,15 @@ function EditorContent() {
             {/* Content - Rich Text Editor */}
             <div>
               <label className="block text-sm font-medium mb-2">Content *</label>
-              <RichTextEditor
-                content={content}
-                onChange={setContent}
-                placeholder="Write your content here..."
-              />
+              {contentLoaded ? (
+                <RichTextEditor
+                  content={content}
+                  onChange={setContent}
+                  placeholder="Write your content here..."
+                />
+              ) : (
+                <div className="h-[400px] border rounded-lg animate-pulse bg-gray-100" />
+              )}
             </div>
 
             {/* Submit */}
@@ -318,7 +322,9 @@ function EditorContent() {
                       ? '기술'
                       : category === 'manual'
                         ? '일상'
-                        : category}
+                        : category === 'ai'
+                          ? 'AI'
+                          : category}
                 </Badge>
                 {aiGenerated && (
                   <Badge variant="outline" className="text-amber-600 border-amber-300">

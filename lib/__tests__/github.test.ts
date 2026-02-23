@@ -1,5 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createFileViaGitHub, isGithubConfigured, generateSlug, generateMDXContent } from '../github'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  createFileViaGitHub,
+  generateMDXContent,
+  generateSlug,
+  isGithubConfigured,
+} from '../github'
 
 // Mock Octokit
 vi.mock('@octokit/rest', () => {
@@ -8,7 +13,9 @@ vi.mock('@octokit/rest', () => {
       return {
         repos: {
           getContent: vi.fn().mockRejectedValue({ status: 404 }), // File doesn't exist
-          createOrUpdateFileContents: vi.fn().mockResolvedValue({ data: { commit: { sha: 'abc123' } } }),
+          createOrUpdateFileContents: vi
+            .fn()
+            .mockResolvedValue({ data: { commit: { sha: 'abc123' } } }),
         },
       }
     }),
@@ -34,7 +41,7 @@ describe('github', () => {
           path: 'test.mdx',
           content: 'test content',
           message: 'test commit',
-        })
+        }),
       ).rejects.toThrow('Missing GitHub configuration')
     })
 
@@ -48,7 +55,7 @@ describe('github', () => {
           path: 'test.mdx',
           content: 'test content',
           message: 'test commit',
-        })
+        }),
       ).resolves.not.toThrow()
     })
   })
@@ -78,8 +85,13 @@ describe('github', () => {
       expect(generateSlug('Hello! World? Test...')).toBe('hello-world-test')
     })
 
-    it('should handle Korean characters', () => {
-      expect(generateSlug('안녕하세요 TypeScript')).toBe('안녕하세요-typescript')
+    it('should handle Korean characters with ASCII', () => {
+      expect(generateSlug('안녕하세요 TypeScript')).toBe('typescript')
+    })
+
+    it('should generate date-based slug for Korean-only titles', () => {
+      const slug = generateSlug('안녕하세요')
+      expect(slug).toMatch(/^post-\d+$/)
     })
 
     it('should limit slug length', () => {
@@ -117,7 +129,7 @@ describe('github', () => {
       const result = generateMDXContent({
         title: 'AI Generated Post',
         date: new Date('2026-02-03'),
-        category: 'ai-daily-tip',
+        category: 'ai',
         tags: ['ai'],
         summary: 'AI summary',
         aiGenerated: true,
@@ -125,6 +137,22 @@ describe('github', () => {
       })
 
       expect(result).toContain('aiGenerated: true')
+    })
+
+    it('should escape quotes and newlines in frontmatter fields', () => {
+      const result = generateMDXContent({
+        title: 'He said "Hello"',
+        date: new Date('2026-02-03'),
+        category: 'tech',
+        tags: ['next.js "app"', 'line\nbreak'],
+        summary: 'first line\nsecond "line"',
+        aiGenerated: false,
+        content: '# Safe Content',
+      })
+
+      expect(result).toContain('title: "He said \\"Hello\\""')
+      expect(result).toContain('tags: ["next.js \\"app\\"", "line\\nbreak"]')
+      expect(result).toContain('summary: "first line\\nsecond \\"line\\""')
     })
   })
 })

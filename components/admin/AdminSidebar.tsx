@@ -1,19 +1,11 @@
 'use client'
 
+import { Brain, ExternalLink, FileText, LayoutDashboard, LogOut, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import {
-  LayoutDashboard,
-  FileText,
-  MessageSquare,
-  Users,
-  Brain,
-  ExternalLink,
-  LogOut,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 const navItems = [
   {
@@ -30,11 +22,6 @@ const navItems = [
     title: 'Comments',
     href: '/admin/comments',
     icon: MessageSquare,
-  },
-  {
-    title: 'Subscribers',
-    href: '/admin/subscribers',
-    icon: Users,
   },
   {
     title: 'AI Logs',
@@ -81,7 +68,7 @@ export function AdminSidebar() {
                 'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                 isActive
                   ? 'bg-gray-800 text-white'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white',
               )}
             >
               <Icon className="h-4 w-4" />

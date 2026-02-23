@@ -2,7 +2,6 @@
 
 import { Badge } from '@/components/ui/badge'
 import { MDXContent } from '@content-collections/mdx/react'
-import AISummary from './AISummary'
 
 interface PostContentProps {
   post: {
@@ -12,7 +11,6 @@ interface PostContentProps {
     tags: string[]
     aiGenerated: boolean
     body: string
-    content: string
   }
 }
 
@@ -46,9 +44,6 @@ export default function PostContent({ post }: PostContentProps) {
           </div>
         )}
       </div>
-
-      {/* AI 3줄 요약 */}
-      <AISummary title={post.title} content={post.content} />
 
       {/* MDX 콘텐츠 */}
       <div className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-primary prose-code:text-primary prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">

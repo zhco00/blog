@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server'
-import { isAuthenticated } from '@/lib/auth'
-import { createFileViaGitHub, deleteFileViaGitHub, isGithubConfigured } from '@/lib/github'
-import { allPosts, type Post } from '@/.content-collections/generated'
 import { z } from 'zod'
+import { allPosts, type Post } from '@/.content-collections/generated'
+import { isAuthenticated } from '@/lib/auth'
+import {
+  createFileViaGitHub,
+  deleteFileViaGitHub,
+  generateMDXContent,
+  isGithubConfigured,
+} from '@/lib/github'
 
 /**
  * GET /api/admin/posts/[slug] - Get a single post for editing
  */
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const authenticated = await isAuthenticated()
     if (!authenticated) {
@@ -44,7 +46,7 @@ export async function GET(
 const updatePostSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   content: z.string().min(1, 'Content is required'),
-  category: z.enum(['manual', 'tech', 'reading', 'ai-daily-tip', 'ai-github', 'ai-news']),
+  category: z.enum(['manual', 'tech', 'reading', 'ai']),
   tags: z.array(z.string()).min(1, 'At least one tag is required').max(10, 'Too many tags'),
   summary: z.string().max(500, 'Summary too long').optional(),
   aiGenerated: z.boolean().optional(),
@@ -53,10 +55,7 @@ const updatePostSchema = z.object({
 /**
  * PUT /api/admin/posts/[slug] - Update a post
  */
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const authenticated = await isAuthenticated()
     if (!authenticated) {
@@ -64,10 +63,7 @@ export async function PUT(
     }
 
     if (!isGithubConfigured()) {
-      return NextResponse.json(
-        { error: 'GitHub API not configured' },
-        { status: 503 }
-      )
+      return NextResponse.json({ error: 'GitHub API not configured' }, { status: 503 })
     }
 
     const { slug } = await params
@@ -81,30 +77,24 @@ export async function PUT(
     const result = updatePostSchema.safeParse(body)
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
     }
 
     const { title, content, category, tags, summary, aiGenerated } = result.data
 
-    // Escape curly braces for MDX compatibility
-    const escapedContent = content
-      .replace(/\{/g, '&#123;')
-      .replace(/\}/g, '&#125;')
+    const existingDate = new Date(post.date)
+    const postDate = Number.isNaN(existingDate.getTime()) ? new Date() : existingDate
 
     // Generate updated MDX content
-    const mdxContent = `---
-title: "${title}"
-date: "${post.date}"
-category: ${category}
-tags: [${tags.map((tag) => `"${tag}"`).join(', ')}]
-summary: "${summary || ''}"
-aiGenerated: ${aiGenerated ?? post.aiGenerated}
----
-
-${escapedContent}`
+    const mdxContent = generateMDXContent({
+      title,
+      date: postDate,
+      category,
+      tags,
+      summary: summary || '',
+      aiGenerated: aiGenerated ?? post.aiGenerated,
+      content,
+    })
 
     // Update file via GitHub API
     const filePath = `content/posts/${post._meta.filePath}`
@@ -128,10 +118,7 @@ ${escapedContent}`
  * DELETE /api/admin/posts/[slug] - Delete a post
  * Posts are deleted via GitHub API which triggers a rebuild
  */
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     // Check authentication
     const authenticated = await isAuthenticated()
@@ -145,7 +132,7 @@ export async function DELETE(
     if (!isGithubConfigured()) {
       return NextResponse.json(
         { error: 'GitHub API not configured. Set GITHUB_PAT, GITHUB_OWNER, and GITHUB_REPO.' },
-        { status: 503 }
+        { status: 503 },
       )
     }
 
@@ -168,9 +155,6 @@ export async function DELETE(
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json(
-      { error: `Failed to delete post: ${message}` },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: `Failed to delete post: ${message}` }, { status: 500 })
   }
 }

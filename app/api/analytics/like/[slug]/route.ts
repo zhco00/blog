@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
-import { toggleLike } from '@/lib/db/queries'
-import { isDbAvailable } from '@/lib/db/client'
 import { z } from 'zod'
+import { isDbAvailable } from '@/lib/db/client'
+import { toggleLike } from '@/lib/db/queries'
+import { ANALYTICS_WRITE_RATE_LIMIT, checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 interface RouteContext {
   params: Promise<{ slug: string }>
@@ -15,13 +16,23 @@ const requestSchema = z.object({
  * POST /api/analytics/like/[slug] - Toggle like for a post
  */
 export async function POST(request: Request, context: RouteContext) {
+  const clientIp = getClientIp(request)
+  const rateLimitResult = checkRateLimit(`analytics:like:${clientIp}`, ANALYTICS_WRITE_RATE_LIMIT)
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429 },
+    )
+  }
+
   try {
     const { slug } = await context.params
 
     if (!isDbAvailable) {
       return NextResponse.json(
         { success: false, message: 'Database not available' },
-        { status: 200 }
+        { status: 200 },
       )
     }
 
@@ -32,7 +43,7 @@ export async function POST(request: Request, context: RouteContext) {
     if (!result.success) {
       return NextResponse.json(
         { error: 'Invalid request body', details: result.error.issues },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

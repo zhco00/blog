@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { generateContent, isClaudeAvailable } from '../claude'
 
 // Mock the Anthropic SDK
@@ -26,13 +26,12 @@ describe('claude', () => {
   })
 
   describe('generateContent', () => {
-    it('should return mock data when API key is not set', async () => {
+    it('should throw when API key is not set', async () => {
       delete process.env.ANTHROPIC_API_KEY
 
-      const result = await generateContent('Test prompt')
-
-      expect(result.content).toContain('Mock Generated Content')
-      expect(result.tokensUsed).toBe(0)
+      await expect(generateContent('Test prompt')).rejects.toThrow(
+        'ANTHROPIC_API_KEY is not configured',
+      )
     })
 
     it('should generate content when API key is set', async () => {

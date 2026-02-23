@@ -1,17 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Eye, FileText, MessageSquare } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { StatCard } from '@/components/admin/StatCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Eye, FileText, MessageSquare, Users } from 'lucide-react'
 
 interface DashboardStats {
   totalViews: number
   totalPosts: number
   totalComments: number
-  totalSubscribers: number
   topPosts: Array<{
     slug: string
     title: string
@@ -88,7 +87,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
           <StatCard
             title="Total Views"
             value={stats?.totalViews.toLocaleString() || '0'}
@@ -106,12 +105,6 @@ export default function AdminDashboardPage() {
             value={stats?.totalComments || 0}
             icon={MessageSquare}
             description="User comments"
-          />
-          <StatCard
-            title="Subscribers"
-            value={stats?.totalSubscribers || 0}
-            icon={Users}
-            description="Newsletter subscribers"
           />
         </div>
 

@@ -9,7 +9,7 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.string(),
-    category: z.enum(['manual', 'tech', 'reading', 'ai-daily-tip', 'ai-github', 'ai-news']),
+    category: z.enum(['manual', 'tech', 'reading', 'ai']),
     tags: z.array(z.string()).default([]),
     summary: z.string().optional(),
     aiGenerated: z.boolean().default(false),

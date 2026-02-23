@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { allPosts } from '@/.content-collections/generated'
-import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
+import PostCard from '@/components/blog/PostCard'
 import SearchBar from '@/components/blog/SearchBar'
 
 function BlogContent() {
@@ -41,12 +41,12 @@ function BlogContent() {
         (post) =>
           post.title.toLowerCase().includes(query) ||
           post.summary?.toLowerCase().includes(query) ||
-          post.tags.some((tag) => tag.toLowerCase().includes(query))
+          post.tags.some((tag) => tag.toLowerCase().includes(query)),
       )
     }
 
     // 날짜순 정렬
-    return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    return [...result].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   }, [selectedCategory, searchQuery])
 
   return (
@@ -68,9 +68,7 @@ function BlogContent() {
       </div>
 
       {/* 결과 카운트 */}
-      <p className="text-sm text-muted-foreground mb-4">
-        {filteredPosts.length}개의 포스트
-      </p>
+      <p className="text-sm text-muted-foreground mb-4">{filteredPosts.length}개의 포스트</p>
 
       {/* 포스트 그리드 */}
       {filteredPosts.length > 0 ? (

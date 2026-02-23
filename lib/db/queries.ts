@@ -1,94 +1,15 @@
 import { eq, desc, sql } from 'drizzle-orm'
 import { db, isDbAvailable } from './client'
 import {
-  subscribers,
   postAnalytics,
   comments,
   aiGenerations,
-  type NewSubscriber,
   type NewComment,
   type NewAIGeneration,
-  type Subscriber,
   type PostAnalytics,
   type Comment,
   type AIGeneration,
 } from './schema'
-
-// ==================== Subscribers ====================
-
-export async function createSubscriber(email: string): Promise<Subscriber | null> {
-  if (!isDbAvailable || !db) return null
-
-  try {
-    const [subscriber] = await db
-      .insert(subscribers)
-      .values({ email })
-      .returning()
-    return subscriber
-  } catch (error) {
-    // DB operation failed: createSubscriber failed:', { email, error })
-    return null
-  }
-}
-
-export async function getSubscriberByEmail(email: string): Promise<Subscriber | null> {
-  if (!isDbAvailable || !db) return null
-
-  try {
-    const [subscriber] = await db
-      .select()
-      .from(subscribers)
-      .where(eq(subscribers.email, email))
-      .limit(1)
-    return subscriber || null
-  } catch (error) {
-    // DB operation failed: getSubscriberByEmail failed:', { email, error })
-    return null
-  }
-}
-
-export async function getActiveSubscribers(): Promise<Subscriber[]> {
-  if (!isDbAvailable || !db) return []
-
-  try {
-    return await db
-      .select()
-      .from(subscribers)
-      .where(eq(subscribers.active, true))
-  } catch (error) {
-    // DB operation failed: getActiveSubscribers failed:', error)
-    return []
-  }
-}
-
-export async function unsubscribe(email: string): Promise<boolean> {
-  if (!isDbAvailable || !db) return false
-
-  try {
-    await db
-      .update(subscribers)
-      .set({ active: false })
-      .where(eq(subscribers.email, email))
-    return true
-  } catch {
-    return false
-  }
-}
-
-export async function reactivateSubscriber(email: string): Promise<Subscriber | null> {
-  if (!isDbAvailable || !db) return null
-
-  try {
-    const [subscriber] = await db
-      .update(subscribers)
-      .set({ active: true })
-      .where(eq(subscribers.email, email))
-      .returning()
-    return subscriber || null
-  } catch {
-    return null
-  }
-}
 
 // ==================== Post Analytics ====================
 

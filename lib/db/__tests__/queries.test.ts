@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import * as queries from '../queries'
-import { db, isDbAvailable } from '../client'
 
 // Mock the database client
 vi.mock('../client', () => ({
@@ -10,21 +9,6 @@ vi.mock('../client', () => ({
 
 describe('Database Queries', () => {
   describe('when database is not available', () => {
-    it('createSubscriber should return null', async () => {
-      const result = await queries.createSubscriber('test@example.com')
-      expect(result).toBeNull()
-    })
-
-    it('getSubscriberByEmail should return null', async () => {
-      const result = await queries.getSubscriberByEmail('test@example.com')
-      expect(result).toBeNull()
-    })
-
-    it('getActiveSubscribers should return empty array', async () => {
-      const result = await queries.getActiveSubscribers()
-      expect(result).toEqual([])
-    })
-
     it('incrementViews should return null', async () => {
       const result = await queries.incrementViews('test-slug')
       expect(result).toBeNull()

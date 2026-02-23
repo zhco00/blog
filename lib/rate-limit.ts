@@ -24,10 +24,7 @@ export interface RateLimitResult {
 /**
  * Check rate limit for a given key (e.g., IP address or user ID)
  */
-export function checkRateLimit(
-  key: string,
-  config: RateLimitConfig
-): RateLimitResult {
+export function checkRateLimit(key: string, config: RateLimitConfig): RateLimitResult {
   const now = Date.now()
   const entry = store.get(key)
 
@@ -90,5 +87,20 @@ export const AI_RATE_LIMIT: RateLimitConfig = {
 
 export const SUMMARY_RATE_LIMIT: RateLimitConfig = {
   maxRequests: 20, // 20 summaries
+  windowMs: 60 * 60 * 1000, // per hour
+}
+
+export const AUTH_RATE_LIMIT: RateLimitConfig = {
+  maxRequests: 10, // 10 attempts
+  windowMs: 15 * 60 * 1000, // per 15 minutes
+}
+
+export const VERIFY_RATE_LIMIT: RateLimitConfig = {
+  maxRequests: 20, // 20 attempts
+  windowMs: 15 * 60 * 1000, // per 15 minutes
+}
+
+export const ANALYTICS_WRITE_RATE_LIMIT: RateLimitConfig = {
+  maxRequests: 120, // 120 write requests
   windowMs: 60 * 60 * 1000, // per hour
 }

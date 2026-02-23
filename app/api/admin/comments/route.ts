@@ -23,7 +23,7 @@ export async function GET() {
 
     // Enrich with post titles
     const enrichedComments = comments.map((comment) => {
-      const post = allPosts.find((p: Post) => p._meta.path === comment.postSlug)
+      const post = allPosts.find((p: Post) => p.slug === comment.postSlug)
       return {
         ...comment,
         postTitle: post?.title || comment.postSlug,

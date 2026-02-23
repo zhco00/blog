@@ -23,7 +23,7 @@ export async function createFileViaGitHub({
 
   if (!token || !owner || !repo) {
     throw new Error(
-      'Missing GitHub configuration. Set GITHUB_PAT, GITHUB_OWNER, and GITHUB_REPO environment variables.'
+      'Missing GitHub configuration. Set GITHUB_PAT, GITHUB_OWNER, and GITHUB_REPO environment variables.',
     )
   }
 
@@ -62,7 +62,6 @@ export async function createFileViaGitHub({
       branch,
       ...(sha && { sha }),
     })
-
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     throw new Error(`Failed to create file via GitHub API: ${errorMessage}`)
@@ -89,7 +88,7 @@ export async function deleteFileViaGitHub({
 
   if (!token || !owner || !repo) {
     throw new Error(
-      'Missing GitHub configuration. Set GITHUB_PAT, GITHUB_OWNER, and GITHUB_REPO environment variables.'
+      'Missing GitHub configuration. Set GITHUB_PAT, GITHUB_OWNER, and GITHUB_REPO environment variables.',
     )
   }
 
@@ -140,7 +139,7 @@ export async function uploadBinaryViaGitHub({
 
   if (!token || !owner || !repo) {
     throw new Error(
-      'Missing GitHub configuration. Set GITHUB_PAT, GITHUB_OWNER, and GITHUB_REPO environment variables.'
+      'Missing GitHub configuration. Set GITHUB_PAT, GITHUB_OWNER, and GITHUB_REPO environment variables.',
     )
   }
 
@@ -192,11 +191,24 @@ export function isGithubConfigured(): boolean {
  * Generate a slug from title
  */
 export function generateSlug(title: string): string {
-  return title
+  const asciiSlug = title
     .toLowerCase()
-    .replace(/[^a-z0-9가-힣]+/g, '-')
+    .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 100)
+
+  if (!asciiSlug) {
+    return `post-${Date.now()}`
+  }
+  return asciiSlug
+}
+
+function escapeFrontmatterString(value: string): string {
+  return value
+    .replaceAll('\\', '\\\\')
+    .replaceAll('"', '\\"')
+    .replaceAll('\r\n', '\\n')
+    .replaceAll('\n', '\\n')
 }
 
 /**
@@ -212,13 +224,16 @@ export function generateMDXContent(options: {
   content: string
 }): string {
   const { title, date, category, tags, summary, aiGenerated = false, content } = options
+  const safeTitle = escapeFrontmatterString(title)
+  const safeSummary = escapeFrontmatterString(summary)
+  const safeTags = tags.map((tag) => `"${escapeFrontmatterString(tag)}"`).join(', ')
 
   const frontmatter = `---
-title: "${title}"
+title: "${safeTitle}"
 date: ${date.toISOString()}
 category: ${category}
-tags: [${tags.map((tag) => `"${tag}"`).join(', ')}]
-summary: "${summary}"
+tags: [${safeTags}]
+summary: "${safeSummary}"
 aiGenerated: ${aiGenerated}
 ---
 

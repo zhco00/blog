@@ -15,11 +15,11 @@ export interface GenerateResult {
 
 /**
  * Generate content using Claude API
- * Gracefully falls back to mock data if API key is missing
+ * Fails explicitly if API key is missing
  */
 export async function generateContent(
   prompt: string,
-  options: GenerateOptions = {}
+  options: GenerateOptions = {},
 ): Promise<GenerateResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY
 

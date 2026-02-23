@@ -6,7 +6,7 @@ export default function Footer() {
           <div>
             <h3 className="font-bold mb-2">AI 블로그</h3>
             <p className="text-sm text-muted-foreground">
-              개인 블로그 + AI 자동화 콘텐츠 플랫폼
+              개인 블로그
             </p>
           </div>
 
@@ -14,13 +14,13 @@ export default function Footer() {
             <h3 className="font-bold mb-2">카테고리</h3>
             <ul className="space-y-1 text-sm">
               <li>
-                <a href="/blog/category/tech" className="text-muted-foreground hover:text-primary">
+                <a href="/blog?category=tech" className="text-muted-foreground hover:text-primary">
                   기술
                 </a>
               </li>
               <li>
                 <a
-                  href="/blog/category/reading"
+                  href="/blog?category=reading"
                   className="text-muted-foreground hover:text-primary"
                 >
                   독서
@@ -28,7 +28,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/blog/category/manual"
+                  href="/blog?category=manual"
                   className="text-muted-foreground hover:text-primary"
                 >
                   일상

@@ -40,7 +40,7 @@ jobs:
           GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           AI_DAILY_TIP_MAX_TOKENS: ${{ vars.AI_DAILY_TIP_MAX_TOKENS }}
-        run: pnpm run generate:daily-tip
+        run: pnpm run generate:daily-post
 
       - name: Send notification on failure
         if: failure()

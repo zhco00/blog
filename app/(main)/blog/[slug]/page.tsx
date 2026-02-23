@@ -1,14 +1,14 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { allPosts } from '@/.content-collections/generated'
-import PostContent from '@/components/blog/PostContent'
-import ViewCounter from '@/components/blog/ViewCounter'
-import LikeButton from '@/components/blog/LikeButton'
-import ShareButtons from '@/components/blog/ShareButtons'
 import Comments from '@/components/blog/Comments'
+import LikeButton from '@/components/blog/LikeButton'
+import PostContent from '@/components/blog/PostContent'
 import RelatedPosts from '@/components/blog/RelatedPosts'
+import ShareButtons from '@/components/blog/ShareButtons'
+import ViewCounter from '@/components/blog/ViewCounter'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import type { Metadata } from 'next'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -45,7 +45,9 @@ export default async function BlogPostPage({ params }: PageProps) {
   }
 
   // 현재 포스트 인덱스 찾기
-  const sortedPosts = allPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const sortedPosts = [...allPosts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  )
   const currentIndex = sortedPosts.findIndex((p) => p.slug === slug)
   const prevPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null
   const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null
@@ -91,9 +93,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <div>
             {prevPost ? (
               <Link href={`/blog/${prevPost.slug}`}>
-                <Button variant="outline">
-                  ← {prevPost.title}
-                </Button>
+                <Button variant="outline">← {prevPost.title}</Button>
               </Link>
             ) : (
               <div />
@@ -102,9 +102,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <div>
             {nextPost ? (
               <Link href={`/blog/${nextPost.slug}`}>
-                <Button variant="outline">
-                  {nextPost.title} →
-                </Button>
+                <Button variant="outline">{nextPost.title} →</Button>
               </Link>
             ) : (
               <div />
@@ -112,7 +110,6 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
         </div>
       </div>
-
     </div>
   )
 }
