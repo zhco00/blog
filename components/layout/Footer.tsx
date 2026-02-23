@@ -1,55 +1,37 @@
+import Link from 'next/link'
+
+const CATEGORIES = [
+  { key: 'ai', label: 'AI 칼럼' },
+  { key: 'tech', label: '기술' },
+  { key: 'reading', label: '독서' },
+  { key: 'manual', label: '일상' },
+]
+
 export default function Footer() {
   return (
-    <footer className="border-t bg-gray-50 mt-auto">
+    <footer className="border-t bg-gray-50 dark:bg-background mt-auto">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h3 className="font-bold mb-2">AI 블로그</h3>
             <p className="text-sm text-muted-foreground">
-              개인 블로그
+              AI가 매일 새로운 인사이트를 전합니다
             </p>
           </div>
 
           <div>
             <h3 className="font-bold mb-2">카테고리</h3>
             <ul className="space-y-1 text-sm">
-              <li>
-                <a href="/blog?category=tech" className="text-muted-foreground hover:text-primary">
-                  기술
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/blog?category=reading"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  독서
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/blog?category=manual"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  일상
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-bold mb-2">링크</h3>
-            <ul className="space-y-1 text-sm">
-              <li>
-                <a href="/about" className="text-muted-foreground hover:text-primary">
-                  소개
-                </a>
-              </li>
-              <li>
-                <a href="/blog" className="text-muted-foreground hover:text-primary">
-                  전체 포스트
-                </a>
-              </li>
+              {CATEGORIES.map((cat) => (
+                <li key={cat.key}>
+                  <Link
+                    href={`/blog?category=${cat.key}`}
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    {cat.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

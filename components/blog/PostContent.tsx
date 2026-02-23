@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { MDXContent } from '@content-collections/mdx/react'
+import { getCategoryColor, getCategoryLabel } from '@/lib/categories'
 
 interface PostContentProps {
   post: {
@@ -14,13 +15,6 @@ interface PostContentProps {
     body: string
     summary?: string
   }
-}
-
-const CATEGORY_LABELS: Record<string, string> = {
-  ai: 'AI 칼럼',
-  tech: '기술',
-  reading: '독서',
-  manual: '일상',
 }
 
 export default function PostContent({ post }: PostContentProps) {
@@ -62,9 +56,9 @@ export default function PostContent({ post }: PostContentProps) {
       {/* 메타데이터 */}
       <div className="mb-10">
         <div className="flex items-center gap-2 mb-5">
-          <Badge variant="secondary" className="text-xs font-medium">
-            {CATEGORY_LABELS[post.category] || post.category}
-          </Badge>
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getCategoryColor(post.category)}`}>
+            {getCategoryLabel(post.category)}
+          </span>
           {post.aiGenerated && (
             <Badge variant="outline" className="text-xs text-muted-foreground">
               AI 생성

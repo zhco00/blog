@@ -1,6 +1,6 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
+import { getCategoryColor, getCategoryLabel } from '@/lib/categories'
 
 interface CategoryFilterProps {
   categories: string[]
@@ -15,23 +15,35 @@ export default function CategoryFilter({
 }: CategoryFilterProps) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Badge
-        variant={currentCategory === null ? 'default' : 'outline'}
-        className="cursor-pointer"
+      <button
+        type="button"
         onClick={() => onCategoryChange(null)}
+        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+          currentCategory === null
+            ? 'bg-foreground text-background'
+            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+        }`}
       >
         전체
-      </Badge>
-      {categories.map((category) => (
-        <Badge
-          key={category}
-          variant={currentCategory === category ? 'default' : 'outline'}
-          className="cursor-pointer"
-          onClick={() => onCategoryChange(category)}
-        >
-          {category}
-        </Badge>
-      ))}
+      </button>
+      {categories.map((category) => {
+        const isActive = currentCategory === category
+        const colorClass = getCategoryColor(category)
+        return (
+          <button
+            type="button"
+            key={category}
+            onClick={() => onCategoryChange(category)}
+            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              isActive
+                ? colorClass
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            {getCategoryLabel(category)}
+          </button>
+        )
+      })}
     </div>
   )
 }
