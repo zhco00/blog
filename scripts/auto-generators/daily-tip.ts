@@ -23,9 +23,20 @@ try {
 }
 
 import { generateContent, isClaudeAvailable } from '../../lib/ai/claude'
-import { extractTipMetadata, generateDailyTipPrompt } from '../../lib/ai/prompts/daily-tip'
+import { DAILY_POST_SYSTEM_PROMPT, extractTipMetadata, generateDailyTipPrompt } from '../../lib/ai/prompts/daily-tip'
 import { createFileViaGitHub, generateMDXContent, generateSlug } from '../../lib/github'
 import { notifyAIPublish } from '../../lib/utils/notify'
+
+/**
+ * Validates that AI-generated content is complete and not truncated
+ */
+function validateContentCompleteness(content: string): boolean {
+  const hasTermSection = content.includes('용어 설명')
+  const endsWithPunctuation = /[.다요습니까!?\|]$/.test(content.trim())
+  const hasMinLength = content.length > 1500
+
+  return hasTermSection && endsWithPunctuation && hasMinLength
+}
 
 /**
  * Generates and publishes a daily development tip
@@ -66,13 +77,30 @@ function parseUser(input: string) {
 - Smaller units are easier to test
 - Refactors become safer over time`
 
-    const { content, tokensUsed } = useFallback
-      ? { content: fallbackContent, tokensUsed: 0 }
-      : await generateContent(prompt, {
+    const maxTokens = Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '8000')
+    const maxAttempts = 2
+    let content = ''
+    let tokensUsed = 0
+
+    if (useFallback) {
+      content = fallbackContent
+    } else {
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const result = await generateContent(prompt, {
           model: 'claude-sonnet-4-20250514',
-          maxTokens: Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '4000'),
-          system: '당신은 경제, 기술, 글로벌 트렌드에 대해 깊이 있는 분석 칼럼을 작성하는 전문 칼럼니스트입니다. 한국어로 작성하며, 구체적 수치와 사례를 기반으로 인사이트를 제공합니다.',
+          maxTokens,
+          system: DAILY_POST_SYSTEM_PROMPT,
         })
+        content = result.content
+        tokensUsed = result.tokensUsed
+
+        if (validateContentCompleteness(content)) {
+          break
+        }
+
+        console.warn(`[Daily Tip] Attempt ${attempt}: content incomplete, ${attempt < maxAttempts ? 'retrying...' : 'using best result'}`)
+      }
+    }
 
     // Extract metadata
     const { title, summary } = extractTipMetadata(content)
