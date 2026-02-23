@@ -83,7 +83,7 @@ function parseUser(input: string) {
 - Smaller units are easier to test
 - Refactors become safer over time`
 
-    const maxTokens = Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '12000')
+    const maxTokens = Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '4000')
     const maxAttempts = 3
     let content = ''
     let tokensUsed = 0

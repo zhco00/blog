@@ -248,6 +248,10 @@
   }
 
   /* Footnote reference in text - small superscript number */
+  .prose sup {
+    scroll-margin-top: 40vh;
+  }
+
   .prose sup a[data-footnote-ref] {
     color: hsl(var(--primary));
     font-weight: 700;
@@ -275,6 +279,7 @@
     font-size: 0.75rem;
     line-height: 1.6;
     color: hsl(var(--muted-foreground));
+    scroll-margin-top: 30vh;
   }
 
   .prose .footnotes h2 {
@@ -294,7 +299,14 @@
   .prose .footnotes li {
     margin: 0.35rem 0;
     padding-left: 0.25rem;
-    scroll-margin-top: 6rem;
+    scroll-margin-top: 30vh;
+  }
+
+  .prose .footnotes li:target {
+    background: hsl(var(--primary) / 0.1);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    margin-left: -0.5rem;
   }
 
   .prose .footnotes li p {

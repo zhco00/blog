@@ -56,6 +56,11 @@ export async function generateContent(
       ...(tools.length > 0 && { tools }),
     })
 
+    // Log stop reason for debugging truncation issues
+    if (message.stop_reason !== 'end_turn') {
+      console.warn(`[Claude] stop_reason=${message.stop_reason}, output_tokens=${message.usage.output_tokens}/${maxTokens}`)
+    }
+
     // Extract text content from response (web search responses have multiple content blocks)
     const textParts = message.content
       .filter((block): block is Anthropic.Messages.TextBlock => block.type === 'text')
