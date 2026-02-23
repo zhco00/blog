@@ -248,10 +248,7 @@
   }
 
   /* Footnote reference in text - small superscript number */
-  .prose sup {
-    scroll-margin-top: 40vh;
-  }
-
+  /* Back-link target: the a tag has the id, so scroll-margin goes here */
   .prose sup a[data-footnote-ref] {
     color: hsl(var(--primary));
     font-weight: 700;
@@ -262,6 +259,7 @@
     border-radius: 2px;
     background: hsl(var(--primary) / 0.1);
     transition: background 0.2s;
+    scroll-margin-top: 40vh;
   }
 
   .prose sup a[data-footnote-ref]:hover {
@@ -272,6 +270,7 @@
   /* Footnotes section at bottom */
   .prose .footnotes {
     margin-top: 3rem;
+    margin-bottom: 50vh; /* extra space so footnotes can scroll to center */
     padding: 1rem 1.25rem;
     border-radius: 0.5rem;
     background: hsl(var(--muted) / 0.5);
@@ -279,7 +278,6 @@
     font-size: 0.75rem;
     line-height: 1.6;
     color: hsl(var(--muted-foreground));
-    scroll-margin-top: 30vh;
   }
 
   .prose .footnotes h2 {
@@ -299,7 +297,7 @@
   .prose .footnotes li {
     margin: 0.35rem 0;
     padding-left: 0.25rem;
-    scroll-margin-top: 30vh;
+    scroll-margin-top: 40vh;
   }
 
   .prose .footnotes li:target {
