@@ -65,6 +65,13 @@ export default function PostContent({ post }: PostContentProps) {
         )}
       </div>
 
+      {/* AI 면책 고지 */}
+      {post.aiGenerated && (
+        <div className="mb-8 px-4 py-3 rounded-lg bg-muted/50 border border-border text-sm text-muted-foreground">
+          이 글은 AI가 작성했습니다. 구체적인 수치나 데이터는 실제와 다를 수 있으니 참고용으로만 활용해 주세요.
+        </div>
+      )}
+
       {/* MDX 콘텐츠 */}
       <div className="prose prose-lg max-w-none">
         <MDXContent code={post.body} />

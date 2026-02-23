@@ -6,6 +6,7 @@ export interface GenerateOptions {
   model?: ClaudeModel
   maxTokens?: number
   system?: string
+  webSearch?: boolean
 }
 
 export interface GenerateResult {
@@ -15,7 +16,7 @@ export interface GenerateResult {
 
 /**
  * Generate content using Claude API
- * Fails explicitly if API key is missing
+ * Supports web search for real-time data verification
  */
 export async function generateContent(
   prompt: string,
@@ -23,25 +24,44 @@ export async function generateContent(
 ): Promise<GenerateResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY
 
-  // Fail explicitly when API key is missing
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY is not configured')
   }
 
-  const { model = 'claude-sonnet-4-20250514', maxTokens = 1500, system } = options
+  const {
+    model = 'claude-sonnet-4-20250514',
+    maxTokens = 1500,
+    system,
+    webSearch = false,
+  } = options
 
   try {
     const client = new Anthropic({ apiKey })
+
+    const tools: Anthropic.Messages.Tool[] = webSearch
+      ? [
+          {
+            type: 'web_search_20250305' as const,
+            name: 'web_search',
+            max_uses: 3,
+          } as unknown as Anthropic.Messages.Tool,
+        ]
+      : []
 
     const message = await client.messages.create({
       model,
       max_tokens: maxTokens,
       system,
       messages: [{ role: 'user', content: prompt }],
+      ...(tools.length > 0 && { tools }),
     })
 
-    const textBlock = message.content[0]
-    const content = textBlock.type === 'text' ? textBlock.text : ''
+    // Extract text content from response (web search responses have multiple content blocks)
+    const textParts = message.content
+      .filter((block): block is Anthropic.Messages.TextBlock => block.type === 'text')
+      .map((block) => block.text)
+
+    const content = textParts.join('')
     const tokensUsed = message.usage.input_tokens + message.usage.output_tokens
 
     return { content, tokensUsed }

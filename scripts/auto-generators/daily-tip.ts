@@ -31,11 +31,17 @@ import { notifyAIPublish } from '../../lib/utils/notify'
  * Validates that AI-generated content is complete and not truncated
  */
 function validateContentCompleteness(content: string): boolean {
-  const hasTermSection = content.includes('용어 정리')
-  const endsWithPunctuation = /[.다요습니까!?\|]$/.test(content.trim())
-  const hasMinLength = content.length > 1500
+  const hasFootnotes = /\[\^(\d+)\]:/.test(content)
+  const hasTable = content.includes('|---')
+  const hasMinLength = content.length > 1000
+  const hasSummary = content.includes('## 핵심 요약')
+  const hasInsight = content.includes('## 시사점')
 
-  return hasTermSection && endsWithPunctuation && hasMinLength
+  const passed = hasFootnotes && hasTable && hasMinLength && hasSummary && hasInsight
+  if (!passed) {
+    console.warn(`[Validation] footnotes=${hasFootnotes} table=${hasTable} summary=${hasSummary} insight=${hasInsight} length=${content.length}`)
+  }
+  return passed
 }
 
 /**
@@ -77,8 +83,8 @@ function parseUser(input: string) {
 - Smaller units are easier to test
 - Refactors become safer over time`
 
-    const maxTokens = Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '8000')
-    const maxAttempts = 2
+    const maxTokens = Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '12000')
+    const maxAttempts = 3
     let content = ''
     let tokensUsed = 0
 
@@ -86,19 +92,36 @@ function parseUser(input: string) {
       content = fallbackContent
     } else {
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        const result = await generateContent(prompt, {
-          model: 'claude-sonnet-4-20250514',
-          maxTokens,
-          system: DAILY_POST_SYSTEM_PROMPT,
-        })
-        content = result.content
-        tokensUsed = result.tokensUsed
+        try {
+          const result = await generateContent(prompt, {
+            model: 'claude-sonnet-4-20250514',
+            maxTokens,
+            system: DAILY_POST_SYSTEM_PROMPT,
+            webSearch: true,
+          })
+          content = result.content
+          tokensUsed = result.tokensUsed
 
-        if (validateContentCompleteness(content)) {
-          break
+          if (validateContentCompleteness(content)) {
+            break
+          }
+
+          console.warn(`[Daily Tip] Attempt ${attempt}: content incomplete, ${attempt < maxAttempts ? 'retrying after 60s...' : 'using best result'}`)
+          if (attempt < maxAttempts) {
+            await new Promise((resolve) => setTimeout(resolve, 60_000))
+          }
+        } catch (retryError) {
+          const msg = retryError instanceof Error ? retryError.message : String(retryError)
+          if (msg.includes('rate_limit') && attempt < maxAttempts) {
+            console.warn(`[Daily Tip] Rate limited, waiting 60s before retry...`)
+            await new Promise((resolve) => setTimeout(resolve, 60_000))
+          } else if (content) {
+            console.warn(`[Daily Tip] Error on attempt ${attempt}, using previous result: ${msg}`)
+            break
+          } else {
+            throw retryError
+          }
         }
-
-        console.warn(`[Daily Tip] Attempt ${attempt}: content incomplete, ${attempt < maxAttempts ? 'retrying...' : 'using best result'}`)
       }
     }
 

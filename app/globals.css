@@ -246,4 +246,72 @@
   .dark .prose th {
     border-color: hsl(var(--primary) / 0.3);
   }
+
+  /* Footnote reference in text - small superscript number */
+  .prose sup a[data-footnote-ref] {
+    color: hsl(var(--primary));
+    font-weight: 700;
+    font-size: 0.65rem;
+    text-decoration: none;
+    margin-left: 1px;
+    padding: 0 2px;
+    border-radius: 2px;
+    background: hsl(var(--primary) / 0.1);
+    transition: background 0.2s;
+  }
+
+  .prose sup a[data-footnote-ref]:hover {
+    background: hsl(var(--primary) / 0.2);
+    text-decoration: none;
+  }
+
+  /* Footnotes section at bottom */
+  .prose .footnotes {
+    margin-top: 3rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    background: hsl(var(--muted) / 0.5);
+    border: 1px solid hsl(var(--border));
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .prose .footnotes h2 {
+    display: none;
+  }
+
+  .prose .footnotes hr {
+    display: none;
+  }
+
+  .prose .footnotes ol {
+    padding-left: 1.25rem;
+    margin: 0;
+    list-style: decimal;
+  }
+
+  .prose .footnotes li {
+    margin: 0.35rem 0;
+    padding-left: 0.25rem;
+    scroll-margin-top: 6rem;
+  }
+
+  .prose .footnotes li p {
+    margin: 0;
+    display: inline;
+  }
+
+  .prose .footnotes li::marker {
+    color: hsl(var(--primary));
+    font-weight: 600;
+    font-size: 0.7rem;
+  }
+
+  .prose .footnotes a[data-footnote-backref] {
+    color: hsl(var(--primary));
+    text-decoration: none;
+    font-size: 0.65rem;
+    margin-left: 4px;
+  }
 }
