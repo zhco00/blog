@@ -228,6 +228,9 @@ export function generateMDXContent(options: {
   const safeSummary = escapeFrontmatterString(summary)
   const safeTags = tags.map((tag) => `"${escapeFrontmatterString(tag)}"`).join(', ')
 
+  // Strip the first # heading from content to avoid duplication with frontmatter title
+  const strippedContent = content.replace(/^#\s+.+\n*/, '')
+
   const frontmatter = `---
 title: "${safeTitle}"
 date: ${date.toISOString()}
@@ -237,7 +240,7 @@ summary: "${safeSummary}"
 aiGenerated: ${aiGenerated}
 ---
 
-${content}`
+${strippedContent}`
 
   return frontmatter
 }

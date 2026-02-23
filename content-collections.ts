@@ -1,5 +1,6 @@
 import { defineCollection, defineConfig } from '@content-collections/core'
 import { compileMDX } from '@content-collections/mdx'
+import remarkGfm from 'remark-gfm'
 import { z } from 'zod'
 
 const posts = defineCollection({
@@ -16,7 +17,9 @@ const posts = defineCollection({
     content: z.string(),
   }),
   transform: async (document, context) => {
-    const body = await compileMDX(context, document)
+    const body = await compileMDX(context, document, {
+      remarkPlugins: [remarkGfm],
+    })
     const slug = document._meta.path.split('/').pop() || ''
     return {
       ...document,

@@ -114,7 +114,7 @@ describe('github', () => {
         tags: ['typescript', 'nextjs'],
         summary: 'Test summary',
         aiGenerated: false,
-        content: '# Hello World',
+        content: '# Hello World\n\nSome body content here',
       })
 
       expect(result).toContain('title: "Test Title"')
@@ -122,7 +122,9 @@ describe('github', () => {
       expect(result).toContain('tags: ["typescript", "nextjs"]')
       expect(result).toContain('summary: "Test summary"')
       expect(result).toContain('aiGenerated: false')
-      expect(result).toContain('# Hello World')
+      // First # heading is stripped to avoid duplication with frontmatter title
+      expect(result).not.toContain('# Hello World')
+      expect(result).toContain('Some body content here')
     })
 
     it('should handle AI-generated posts', () => {

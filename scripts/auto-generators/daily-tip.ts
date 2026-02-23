@@ -31,7 +31,7 @@ import { notifyAIPublish } from '../../lib/utils/notify'
  * Validates that AI-generated content is complete and not truncated
  */
 function validateContentCompleteness(content: string): boolean {
-  const hasTermSection = content.includes('용어 설명')
+  const hasTermSection = content.includes('용어 정리')
   const endsWithPunctuation = /[.다요습니까!?\|]$/.test(content.trim())
   const hasMinLength = content.length > 1500
 
