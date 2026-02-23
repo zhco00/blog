@@ -70,8 +70,8 @@ function parseUser(input: string) {
       ? { content: fallbackContent, tokensUsed: 0 }
       : await generateContent(prompt, {
           model: 'claude-sonnet-4-20250514',
-          maxTokens: Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '1500'),
-          system: 'You are a senior software engineer writing educational content for developers.',
+          maxTokens: Number.parseInt(process.env.AI_DAILY_TIP_MAX_TOKENS || '4000'),
+          system: '당신은 경제, 기술, 글로벌 트렌드에 대해 깊이 있는 분석 칼럼을 작성하는 전문 칼럼니스트입니다. 한국어로 작성하며, 구체적 수치와 사례를 기반으로 인사이트를 제공합니다.',
         })
 
     // Extract metadata

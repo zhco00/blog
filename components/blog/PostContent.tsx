@@ -46,7 +46,7 @@ export default function PostContent({ post }: PostContentProps) {
       </div>
 
       {/* MDX 콘텐츠 */}
-      <div className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-primary prose-code:text-primary prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+      <div className="prose prose-lg max-w-none">
         <MDXContent code={post.body} />
       </div>
     </article>
