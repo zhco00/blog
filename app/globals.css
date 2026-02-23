@@ -269,7 +269,6 @@
   /* Footnotes section at bottom */
   .prose .footnotes {
     margin-top: 3rem;
-    margin-bottom: 50vh;
     padding: 1rem 1.25rem;
     border-radius: 0.5rem;
     background: hsl(var(--muted) / 0.5);
