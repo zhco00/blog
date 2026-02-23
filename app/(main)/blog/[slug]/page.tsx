@@ -89,20 +89,26 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       {/* 이전/다음 포스트 네비게이션 */}
       <div className="max-w-4xl mx-auto px-4 py-8 border-t">
-        <div className="flex justify-between items-center">
+        <div className="grid grid-cols-2 gap-4">
           <div>
             {prevPost ? (
-              <Link href={`/blog/${prevPost.slug}`}>
-                <Button variant="outline">← {prevPost.title}</Button>
+              <Link href={`/blog/${prevPost.slug}`} className="block group">
+                <span className="text-xs text-muted-foreground">← 이전 글</span>
+                <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
+                  {prevPost.title}
+                </p>
               </Link>
             ) : (
               <div />
             )}
           </div>
-          <div>
+          <div className="text-right">
             {nextPost ? (
-              <Link href={`/blog/${nextPost.slug}`}>
-                <Button variant="outline">{nextPost.title} →</Button>
+              <Link href={`/blog/${nextPost.slug}`} className="block group">
+                <span className="text-xs text-muted-foreground">다음 글 →</span>
+                <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
+                  {nextPost.title}
+                </p>
               </Link>
             ) : (
               <div />
